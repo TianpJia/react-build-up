@@ -1,6 +1,7 @@
 import { Col, Row } from "antd";
 import React, { useContext, useEffect, useState } from "react";
 import "./index.css";
+import CacluateAeara from "../Caculate";
 
 const MenuContext = React.createContext<MenuContextInterface>({
   selectedText: "",
@@ -115,7 +116,7 @@ const MenuDemo: React.FC = () => {
           <Sider menus={menus}></Sider>
         </Col>
         <Col className="right-content" flex={"auto"}>
-          right
+          <CacluateAeara />
         </Col>
       </Row>
     </div>
