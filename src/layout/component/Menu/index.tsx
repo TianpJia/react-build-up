@@ -11,6 +11,10 @@ import {
 
 type MenuItem = Required<MenuProps>["items"][number];
 
+function onMenuItemClick(item: any) {
+  console.info(item);
+}
+
 function getItem(
   label: React.ReactNode,
   key: React.Key,
@@ -24,12 +28,13 @@ function getItem(
     children,
     label,
     type,
+    onClick: onMenuItemClick,
   } as MenuItem;
 }
 
 const items: MenuItem[] = [
-  getItem("Option 1", "1", <PieChartOutlined />),
-  getItem("Option 2", "2", <DesktopOutlined />),
+  getItem("Statistics", "statistics", <PieChartOutlined />),
+  getItem("Dashbord", "dashbord", <DesktopOutlined />),
   getItem("Option 3", "3", <ContainerOutlined />),
 
   getItem("Navigation One", "sub1", <MailOutlined />, [
