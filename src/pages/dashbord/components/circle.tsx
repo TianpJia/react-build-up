@@ -20,7 +20,14 @@ const Circle: React.FC<CircleProps> = ({ diameter, percentage }) => {
     drawCircle(ctx, diameter, percentage);
   }, [canvasRef, diameter, percentage]);
 
-  return <canvas ref={canvasRef} width={diameter} height={diameter} />;
+  return (
+    <canvas
+      ref={canvasRef}
+      width={diameter}
+      height={diameter}
+      style={{ border: "1px solid gray" }}
+    />
+  );
 };
 
 export default Circle;

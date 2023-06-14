@@ -20,6 +20,9 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
+  "includes": [
+    "./path/to/the/new/file/externals.d.ts"
+ ],
   "include": [
     "src"
   ]
