@@ -1,6 +1,5 @@
 import { Col, Row } from "antd";
 import React from "react";
-import Circle3D from "./components/3dCircle";
 import BezierCurve from "./components/bezierCurve";
 import Circle from "./components/circle";
 import Rectangle from "./components/rectangle";
