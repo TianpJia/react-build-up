@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
-import styles from './index.module.less'
-import ReactEcharts from 'echarts-for-react';
+import styles from "./index.module.less";
+import ReactEcharts from "echarts-for-react";
 
 const getOption = () => {
   return {
     series: [
       {
-        type: 'gauge', // 使用仪表盘类型
-        radius: '-20%', // 采用负数是为了让分割线从内向外延伸
+        type: "gauge", // 使用仪表盘类型
+        radius: "-20%", // 采用负数是为了让分割线从内向外延伸
         clockwise: false,
-        startAngle: '0', // 起始角度
-        endAngle: '270', // 结束角度
+        startAngle: "0", // 起始角度
+        endAngle: "270", // 结束角度
         splitNumber: 3, // 分割数量，会将270度分割为3份，所以有四根线
         detail: false,
         axisLine: {
@@ -22,20 +22,20 @@ const getOption = () => {
           length: 12, // 分割线长度
           lineStyle: {
             shadowBlur: 20, // 阴影渐变
-            shadowColor: 'rgb(0, 238, 255)', // 阴影颜色
-            shadowOffsetY: '0',
-            color: 'rgb(0, 238, 255)', // 分割线颜色
+            shadowColor: "rgb(0, 238, 255)", // 阴影颜色
+            shadowOffsetY: "0",
+            color: "rgb(0, 238, 255)", // 分割线颜色
             width: 4, // 分割线宽度
-          }
+          },
         },
-        axisLabel: false
+        axisLabel: false,
       },
       {
-        type: 'gauge',
-        radius: '-20%',
+        type: "gauge",
+        radius: "-20%",
         clockwise: false,
-        startAngle: '45', // 倾斜45度
-        endAngle: '315',
+        startAngle: "45", // 倾斜45度
+        endAngle: "315",
         splitNumber: 3,
         detail: false,
         axisLine: {
@@ -47,27 +47,27 @@ const getOption = () => {
           length: 12,
           lineStyle: {
             shadowBlur: 20,
-            shadowColor: 'rgb(0, 238, 255)',
-            shadowOffsetY: '0',
-            color: 'rgb(0, 238, 255)',
+            shadowColor: "rgb(0, 238, 255)",
+            shadowOffsetY: "0",
+            color: "rgb(0, 238, 255)",
             width: 4,
-          }
+          },
         },
-        axisLabel: false
-      }
-    ]
-  }
-}
+        axisLabel: false,
+      },
+    ],
+  };
+};
 
-
-const Circle3D: React.FC<{}> = ({ }) => {
+const Circle3D: React.FC<{}> = ({}) => {
   const eyeballRef = useRef<HTMLDivElement>(null);
   const [options, setOptions] = useState<any>(getOption());
+  const [isSleep, setIsSleep] = useState(false);
   const leftRotSize = useRef(0);
-  const ballSize = useRef(12)
+  const ballSize = useRef(12);
+  const timer = useRef<NodeJS.Timeout>();
 
   const getEyeballChart = (rotSize: number, bSize: number) => {
-    console.info(rotSize, bSize)
     const option = {
       series: [
         {
@@ -84,44 +84,74 @@ const Circle3D: React.FC<{}> = ({ }) => {
           // ...其他
           splitLine: {
             length: bSize, // 同上
-          }
+          },
         },
-
-      ]
-    }
-    setOptions(option)
-  }
+      ],
+    };
+    setOptions(option);
+  };
 
   const toFixedOne = (parm: number) => {
-    return Number(parm.toFixed(1))
-  }
+    return Number(parm.toFixed(1));
+  };
 
   function toSleep() {
-    getEyeballChart(leftRotSize.current, ballSize.current)
-    if (ballSize.current > 0) {
-      ballSize.current = toFixedOne(ballSize.current - 0.1) // 当眼球存在时慢慢减小
+    if (ballSize.current === 0) {
+      setIsSleep(true);
     }
-    leftRotSize.current === 360 ? (leftRotSize.current = 0) : leftRotSize.current = toFixedOne(leftRotSize.current + 0.1); // 旋转，
+    getEyeballChart(leftRotSize.current, ballSize.current);
     if (ballSize.current > 0) {
       setTimeout(() => {
-        toSleep()
+        toSleep();
       }, 10);
+      ballSize.current = toFixedOne(ballSize.current - 0.1); // 当眼球存在时慢慢减小
     }
+    leftRotSize.current === 360
+      ? (leftRotSize.current = 0)
+      : (leftRotSize.current = toFixedOne(leftRotSize.current + 0.1)); // 旋转，
   }
+
+  const weakUp = () => {
+    clearTimeout(timer.current);
+    if (ballSize.current === 12) {
+      setIsSleep(false);
+    }
+    getEyeballChart(leftRotSize.current, ballSize.current);
+    if (ballSize.current <= 12) {
+      ballSize.current = toFixedOne(ballSize.current + 0.1);
+    }
+    leftRotSize.current === 360
+      ? (leftRotSize.current = 0)
+      : (leftRotSize.current = toFixedOne(leftRotSize.current + 0.1)); // 旋转，
+    timer.current = setTimeout(() => {
+      weakUp();
+    }, 10);
+  };
 
   useEffect(() => {
     setTimeout(() => {
-      toSleep()
+      toSleep();
     }, 1000);
-  }, [])
+  }, []);
 
   return (
-    <div className={styles['container']}>
-      <div className={`${styles['eyeSocket']} ${ballSize.current <= 0 ? styles['eyeSocketSleeping'] : ''}`}>
+    <div className={styles["container"]}>
+      <div
+        className={`${styles["eyeSocket"]} ${
+          ballSize.current <= 0 ? styles["eyeSocketSleeping"] : ""
+        }`}
+        onClick={() => {
+          if (isSleep) {
+            weakUp();
+          } else {
+            clearTimeout(timer.current);
+            toSleep();
+          }
+        }}
+      >
         <div id="eyeball" className={styles.eyeball} ref={eyeballRef}>
           <ReactEcharts option={options} style={{ height: 150 }}></ReactEcharts>
         </div>
-
       </div>
     </div>
   );
