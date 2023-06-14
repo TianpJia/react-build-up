@@ -12,7 +12,6 @@ const Dashbord: React.FC = () => {
         <Col>
           <Circle diameter={200} percentage={75} />
         </Col>
-        <Col><Circle3D diameter={200}></Circle3D></Col>
       </Row>
       <Row> <Rectangle diameter={200} /></Row>
       <Row><BezierCurve diameter={200} /> </Row>

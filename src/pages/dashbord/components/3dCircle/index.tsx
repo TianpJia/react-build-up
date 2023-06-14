@@ -1,17 +1,12 @@
-import React, { useRef, useEffect } from "react";
-import ResizableTable from "../resizeTable";
+import React from "react";
+import styles from './index.module.less'
 
-interface IProps {
-  diameter: number;
-}
-
-const Circle3D: React.FC<IProps> = ({ diameter }) => {
-  const ref = useRef<HTMLDivElement>(null);
+const Circle3D: React.FC<{}> = ({ }) => {
 
   return (
-    <>
-      <div ref={ref}>3d</div>
-    </>
+    <div className={styles['container']}>
+      <div className={styles['eyeSocket']}>111</div>
+    </div>
   );
 };
 
