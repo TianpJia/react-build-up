@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "./index.module.less";
 import ReactEcharts from "echarts-for-react";
 import { Emotion, getOption } from "./utils";
@@ -6,10 +6,13 @@ import { Emotion, getOption } from "./utils";
 const BALL_SIZE = 20;
 
 const Circle3D: React.FC<{}> = ({}) => {
-  const eyeballRef = useRef<HTMLDivElement>(null);
   const [options, setOptions] = useState<any>(getOption());
   const [isSleep, setIsSleep] = useState(false);
   const [currenEemotion, setCurrentEmotion] = useState(Emotion.normol);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const bigEyeRef = useRef<HTMLDivElement>(null);
+  const eyeballRef = useRef<HTMLDivElement>(null);
+  const filterbigEyeRef = useRef<HTMLDivElement>(null);
   const leftRotSize = useRef(0);
   const ballSize = useRef(12);
   const ballColor = useRef("#02ffff");
@@ -52,11 +55,20 @@ const Circle3D: React.FC<{}> = ({}) => {
     return Number(parm.toFixed(1));
   };
 
+  const toAngry = () => {
+    setCurrentEmotion(Emotion.angry);
+    ballColor.current = "rgb(255, 60, 86)";
+  };
+
+  const toNormal = () => {
+    setCurrentEmotion(Emotion.normol);
+    ballColor.current = "#02ffff";
+  };
+
   function toSleep() {
     if (ballSize.current === 0) {
       setIsSleep(true);
-      setCurrentEmotion(Emotion.normol);
-      ballColor.current = "#02ffff";
+      toNormal();
     }
     getEyeballChart(leftRotSize.current, ballSize.current);
     if (ballSize.current > 0) {
@@ -74,8 +86,7 @@ const Circle3D: React.FC<{}> = ({}) => {
     clearTimeout(timer.current);
     if (ballSize.current === BALL_SIZE) {
       setIsSleep(false);
-      setCurrentEmotion(Emotion.angry);
-      ballColor.current = "rgb(255, 60, 86)";
+      toAngry();
     }
     getEyeballChart(leftRotSize.current, ballSize.current);
     if (ballSize.current <= BALL_SIZE) {
@@ -89,17 +100,40 @@ const Circle3D: React.FC<{}> = ({}) => {
     }, 10);
   };
 
-  useEffect(() => {
-    setTimeout(() => {
-      toSleep();
-    }, 1000);
-  }, []);
+  function focusOnMouse(e: any) {
+    {
+      // 视口尺寸，获取到整个视口的大小
+      const container = bodyRef.current;
+      const bigEye = bigEyeRef.current;
+      const eyeball = eyeballRef.current;
+      const filterbigEye = filterbigEyeRef.current;
+      if (!container || !bigEye || !eyeball || !filterbigEye) return;
+      let clientWidth = container.clientWidth;
+      let clientHeight = container.clientHeight;
+      // 原点，即bigEye中心位置，页面中心
+      let origin = [clientWidth / 2, clientHeight / 2];
+      // 鼠标坐标
+      let mouseCoords = [e.clientX - origin[0], origin[1] - e.clientY];
+      // 旋转角度
+      let eyeXDeg = (mouseCoords[1] / clientHeight) * 120; // 这里的80代表的是最上下边缘大眼X轴旋转角度
+      let eyeYDeg = (mouseCoords[0] / clientWidth) * 100;
+      bigEye.style.transform = `rotateY(${eyeYDeg}deg) rotateX(${eyeXDeg}deg)`;
+      filterbigEye.style.transform = `rotateY(${eyeYDeg}deg) rotateX(${eyeXDeg}deg)`;
+      eyeball.style.transform = `translate(${eyeYDeg / 1.5}px, ${
+        -eyeXDeg / 1.5
+      }px)`;
+    }
+  }
 
   return (
-    <div className={`${styles["container"]} ${styles[currenEemotion]}`}>
+    <div
+      className={`${styles["container"]} ${styles[currenEemotion]}`}
+      ref={bodyRef}
+      onMouseMove={focusOnMouse}
+    >
       <div
         className={`${styles["eyeSocket"]} ${
-          ballSize.current <= 0 ? styles["eyeSocketSleeping"] : ""
+          isSleep ? styles["eyeSocketSleeping"] : styles["eyeSocketLooking"]
         }`}
         onClick={() => {
           if (isSleep) {
@@ -109,13 +143,20 @@ const Circle3D: React.FC<{}> = ({}) => {
             toSleep();
           }
         }}
+        ref={bigEyeRef}
       >
         <div id="eyeball" className={styles.eyeball} ref={eyeballRef}>
           <ReactEcharts option={options} style={{ height: 150 }}></ReactEcharts>
         </div>
       </div>
       <div className={styles.filter}>
-        <div className={styles["eyeSocket"]} id="eyeFilter"></div>
+        <div
+          className={`${styles["eyeSocket"]} ${
+            isSleep ? styles["eyeSocketSleeping"] : styles["eyeSocketLooking"]
+          }`}
+          id="eyeFilter"
+          ref={filterbigEyeRef}
+        ></div>
       </div>
       <svg width="0">
         <filter id="filter">

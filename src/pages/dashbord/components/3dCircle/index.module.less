@@ -102,3 +102,29 @@
     transform: scale(1);
   }
 }
+
+.eyeSocketLooking {
+  animation: lookAround 2.5s; // 添加动画，只播放一次
+}
+/* 环视动画 */
+@keyframes lookAround {
+  0% {
+    transform: translateX(0) rotateY(0);
+  }
+
+  10% {
+    transform: translateX(0) rotateY(0);
+  }
+
+  40% {
+    transform: translateX(-70px) rotateY(-30deg);
+  }
+
+  80% {
+    transform: translateX(70px) rotateY(30deg);
+  }
+
+  100% {
+    transform: translateX(0) rotateY(0);
+  }
+}
