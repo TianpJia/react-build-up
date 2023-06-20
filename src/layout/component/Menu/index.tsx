@@ -19,6 +19,7 @@ const MENU_ITEMS = [
   { key: "home", title: "Home", link: "/home" },
   { key: "Statistics", title: "Statistics", link: "/statistics" },
   { key: "Dashbord", title: "Dashbord", link: "/dashbord" },
+  { key: "BallArea", title: "BallArea", link: "/ballArea" },
 ];
 
 const MyMenu: React.FC = () => {
