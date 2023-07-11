@@ -20,6 +20,7 @@ const MENU_ITEMS = [
   { key: "Statistics", title: "Statistics", link: "/statistics" },
   { key: "Dashbord", title: "Dashbord", link: "/dashbord" },
   { key: "BallArea", title: "BallArea", link: "/ballArea" },
+  { key: "Tasks", title: "Tasks", link: "/tasks" },
 ];
 
 const MyMenu: React.FC = () => {
