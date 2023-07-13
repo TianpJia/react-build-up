@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
-import { TasksContext, TasksDispatchContext } from "./taskContext";
+import { TasksDispatchContext, useTasks } from "./taskContext";
 
 export default function TaskList() {
-  const tasks: any = useContext(TasksContext);
+  const tasks: any = useTasks();
   return (
     <ul>
       {tasks.map((task: any) => (
